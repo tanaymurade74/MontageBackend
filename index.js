@@ -7,6 +7,8 @@ const multer = require("multer")
 const bodyParser = require("body-parser")
 const axios = require("axios")
 const cloudinary = require("cloudinary")
+const path =  require("path")
+const fs =  require("fs")
 require("dotenv").config();
 
 
@@ -31,7 +33,23 @@ app.use(bodyParser.json());
 initializeDatabase();
 
 const storage = multer.diskStorage({});
-const upload = multer({storage});
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter: function(req, file, cb){
+        let ext =  path.extName(file.originalName).toLowerCase();
+        let mimeType = file.mimeType();
+
+        if(ext === ".png" || mimeType === png){
+           return cb(null, true);
+        }else{
+            return cb(new Error("Only .png file type is allowed"), false);
+        }
+    }
+        
+});
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -247,15 +265,32 @@ app.get("/albums/:albumId/images/favorites", verifyToken, async (req, res) => {
 });
 
 
-// app.post("/albums/:albumId/images", upload.single("image") , async (req, res)=>{
+app.post("/albums/:albumId/images", upload.single("image") , async (req, res)=>{
    
-//      const file = req.file;
-//      if(!file){
-//         return res.status(400).json({message: "File not provided"})
-//      }
+     const file = req.file;
+     if(!file){
+        return res.status(400).json({message: "File not provided"})
+     }
 
-//      const response = await cloudinary.
-// })
+     const response = await cloudinary.uploader.upload(file.path, {folder: "montage"});
+
+     const {name, tags, favourite}  = req.body;
+
+     let parsedTags = [];
+    if(tags){
+        parsedTags = tags.split(",").map(tag => tag.trim());
+    }
+
+    const newImage = new Image({
+        name,
+        tags,
+        favourite,
+        imageUrl: response.secure_url
+    });
+
+    await newImage.save();
+    
+})
 
 
 app.get("/albums/:albumId/images", verifyToken, async (req, res) => {
