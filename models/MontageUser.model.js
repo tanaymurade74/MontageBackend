@@ -1,0 +1,12 @@
+const mongoose = require("mongoose");
+
+const UserSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    }
+})
+
+const User = mongoose.model("MontageUser", UserSchema)
+module.exports = User;
