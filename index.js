@@ -77,7 +77,7 @@ app.get("/auth/me", verifyToken, async (req, res) => {
 });
 
 app.get("/auth/login", async (req, res) => {
-  const googleUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=http://localhost:3000/auth/google/callback&response_type=code&scope=profile email`;
+  const googleUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=https://montage-backend.vercel.app/auth/google/callback&response_type=code&scope=profile email`;
   res.redirect(googleUrl);
 });
 
@@ -93,7 +93,7 @@ app.get("/auth/google/callback", async (req, res) => {
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         code,
-        redirect_uri: "http://localhost:3000/auth/google/callback",
+        redirect_uri: "https://montage-backend.vercel.app/auth/google/callback",
         grant_type: "authorization_code",
       }),
       {
@@ -130,7 +130,7 @@ app.get("/auth/google/callback", async (req, res) => {
       maxAge: 12 * 60 * 60 * 1000,
     });
 
-    res.redirect("http://localhost:3001/albums");
+    res.redirect("http://localhost:3000/albums");
   } catch (error) {
     return res.status(500).json({ message: "Google authentication failed" });
   }
