@@ -14,6 +14,8 @@ require("dotenv").config();
 const corsOptions = {
   origin: "http://localhost:3000",
   credentials: true,
+  sameSite: "none",
+  secure: true
 };
 
 const initializeDatabase = require("./db.connect.js");
