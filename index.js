@@ -13,9 +13,8 @@ require("dotenv").config();
 
 const corsOptions = {
   origin: "http://localhost:3000",
-  credentials: true,
-  sameSite: "none",
-  secure: true
+  credentials: true
+  
 };
 
 const initializeDatabase = require("./db.connect.js");
@@ -130,6 +129,8 @@ app.get("/auth/google/callback", async (req, res) => {
     res.cookie("token", jwtToken, {
       httpOnly: true,
       maxAge: 12 * 60 * 60 * 1000,
+      sameSite: "none",
+  secure: true
     });
 
     res.redirect("http://localhost:3000/albums");
