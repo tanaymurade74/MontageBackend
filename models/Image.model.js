@@ -21,10 +21,24 @@ const imageSchema = new mongoose.Schema({
         default: false
     },
     comments: [{
-        type: String
+        text: {
+            type: String,
+            required: true
+        },
+        author: {
+            type: mongoose.Schema.Types.ObjectId, ref: "MontageUser"
+        },
+        createdAt:{
+            type: Date,
+            default: Date.now
+        }
     }],
     size: {
         type: Number
+    },
+    imageUrl: {
+        type: String,
+        required: true
     },
     uploadedAt: {
         type: Date,
