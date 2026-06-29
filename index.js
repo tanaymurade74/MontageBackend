@@ -132,6 +132,7 @@ app.get("/auth/google/callback", async (req, res) => {
 
     res.redirect("http://localhost:3000/albums");
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Google authentication failed" });
   }
 });
