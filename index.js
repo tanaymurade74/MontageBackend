@@ -12,7 +12,7 @@ const fs = require("fs");
 require("dotenv").config();
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://montage-frontend.vercel.app",
   credentials: true
   
 };
@@ -24,6 +24,7 @@ const Album = require("./models/Album.model");
 const Image = require("./models/Image.model");
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
@@ -133,7 +134,7 @@ app.get("/auth/google/callback", async (req, res) => {
   secure: true
     });
 
-    res.redirect("http://localhost:3000/albums");
+    res.redirect("https://montage-frontend.vercel.app/albums");
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Google authentication failed" });
