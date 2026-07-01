@@ -13,8 +13,6 @@ require("dotenv").config();
 
 const corsOptions = {
   origin: "https://montage-frontend.vercel.app",
-  credentials: true
-  
 };
 
 const initializeDatabase = require("./db.connect.js");
@@ -60,14 +58,14 @@ cloudinary.config({
 });
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: "No token provided" });
+
+  const token = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token provided" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
@@ -127,25 +125,18 @@ app.get("/auth/google/callback", async (req, res) => {
       expiresIn: "12h",
     });
 
-    res.cookie("token", jwtToken, {
-      httpOnly: true,
-      maxAge: 12 * 60 * 60 * 1000,
-      sameSite: "none",
-  secure: true
-    });
-
-    res.redirect("https://montage-frontend.vercel.app/albums");
+   res.redirect(`https://montage-frontend.vercel.app/oauth-success?token=${jwtToken}`);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Google authentication failed" });
   }
 });
 
-app.post("/auth/logout", async (req, res) => {
-  res.clearCookie("token");
-  return res.status(200).json({ message: "User logged out." });
-  // res.redirect(`http://localhost:3001`)
-});
+// app.post("/auth/logout", async (req, res) => {
+//   res.clearCookie("token");
+//   return res.status(200).json({ message: "User logged out." });
+//   // res.redirect(`http://localhost:3001`)
+// });
 
 const hasAccess = (album, user) => {
   return (
