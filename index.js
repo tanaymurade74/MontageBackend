@@ -13,6 +13,7 @@ require("dotenv").config();
 
 const corsOptions = {
   origin: "https://montage-frontend.vercel.app",
+  credentials: true
 };
 
 const initializeDatabase = require("./db.connect.js");
